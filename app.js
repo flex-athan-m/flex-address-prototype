@@ -408,7 +408,7 @@
   searchInput.disabled = true;
   searchInput.placeholder = 'Loading addresses...';
 
-  fetch('/data/sample-addresses.json')
+  fetch('data/sample-addresses.json')
     .then(function (resp) { return resp.json(); })
     .then(function (data) {
       addresses = data;
