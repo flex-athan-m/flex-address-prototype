@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Flex — Find where you rent</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+  <div class="device-frame">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#000"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#000"/><rect x="9" y="0.5" width="3" height="11.5" rx="1" fill="#000"/><rect x="13" y="0" width="3" height="12" rx="1" fill="#000"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 3.5C9.8 3.5 11.4 4.2 12.6 5.4L14 4C12.4 2.4 10.3 1.5 8 1.5S3.6 2.4 2 4L3.4 5.4C4.6 4.2 6.2 3.5 8 3.5Z" fill="#000"/><path d="M8 7C9 7 9.9 7.4 10.6 8.1L12 6.7C10.9 5.6 9.5 5 8 5S5.1 5.6 4 6.7L5.4 8.1C6.1 7.4 7 7 8 7Z" fill="#000"/><circle cx="8" cy="10.5" r="1.5" fill="#000"/></svg>
+        <svg width="27" height="12" viewBox="0 0 27 12" fill="none"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#000" stroke-width="1"/><rect x="1.5" y="2.5" width="19" height="7" rx="1" fill="#000"/><rect x="23" y="4" width="2.5" height="4" rx="1" fill="#000"/></svg>
+      </div>
+    </div>
+
+    <!-- Screen 1 & 2: Search -->
+    <div id="screen-search" class="screen active">
+      <!-- Nav Bar -->
+      <div class="nav-bar">
+        <button class="nav-back" id="btn-back" aria-label="Go back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <button class="nav-help" aria-label="Help">?</button>
+      </div>
+
+      <!-- Content -->
+      <div class="screen-content search-content">
+        <h1 class="screen-heading">Find where you rent</h1>
+
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <circle cx="7.5" cy="7.5" r="6" stroke="#999" stroke-width="1.5"/>
+            <path d="M12 12L16 16" stroke="#999" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Search address"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          >
+          <button class="search-clear" id="btn-clear" aria-label="Clear search">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="8" fill="#C4C4C4"/>
+              <path d="M6 6L12 12M12 6L6 12" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <a href="#" class="location-link" id="btn-location">Use current location instead</a>
+
+        <!-- Results List -->
+        <div id="results-list" class="results-list"></div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Confirm Address -->
+    <div id="screen-confirm" class="screen">
+      <!-- Back button over map -->
+      <button class="confirm-back" id="btn-confirm-back" aria-label="Go back">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#2C194D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <!-- Map -->
+      <div id="confirm-map" class="confirm-map"></div>
+
+      <!-- Card -->
+      <div class="confirm-card">
+        <h1 class="confirm-heading">Confirm this is the correct address</h1>
+        <p class="confirm-subtext">If you live in an individual unit make sure to add the number or floor</p>
+
+        <!-- Display mode -->
+        <div class="address-card" id="address-display">
+          <div class="address-card-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M3 9.5L11 3L19 9.5V18C19 18.6 18.6 19 18 19H4C3.4 19 3 18.6 3 18V9.5Z" stroke="#6A3DB8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 19V12H14V19" stroke="#6A3DB8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="address-card-text">
+            <div class="address-line1" id="confirm-line1"></div>
+            <div class="address-line2" id="confirm-line2"></div>
+          </div>
+          <button class="address-edit-btn" id="btn-edit-address" aria-label="Edit address">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M11.5 1.5L14.5 4.5L5 14H2V11L11.5 1.5Z" stroke="#6A3DB8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Edit mode (hidden by default) -->
+        <div class="address-edit-form" id="address-edit-form" style="display:none;">
+          <input type="text" id="edit-line1" class="edit-input" placeholder="Street address" autocomplete="off">
+          <input type="text" id="edit-city" class="edit-input" placeholder="City" autocomplete="off">
+          <div class="edit-row">
+            <input type="text" id="edit-state" class="edit-input" placeholder="State" autocomplete="off">
+            <input type="text" id="edit-zip" class="edit-input" placeholder="Zip" autocomplete="off">
+          </div>
+          <button class="edit-save-btn" id="btn-save-edit">Save changes</button>
+        </div>
+
+        <input
+          type="text"
+          id="unit-input"
+          class="unit-input"
+          placeholder="Ex. Unit 7"
+          autocomplete="off"
+        >
+
+        <button class="btn-confirm" id="btn-confirm">Confirm</button>
+        <button class="btn-change" id="btn-change">Change address</button>
+      </div>
+    </div>
+
+    <!-- Home indicator -->
+    <div class="home-indicator"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
